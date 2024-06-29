@@ -1,0 +1,2 @@
+# wget --no-clobber --reject-regex "(.*)\?(.*)|(.*)rdiff(.*)" --accept-regex "" -e robots=off -r --mirror --convert-links --backup-converted https://wiki.tudelft.nl/bin/view/Organisation/OTB/GISt/WebHome
+wget --no-clobber --reject-regex "(.*)\?(.*)|(.*)rdiff(.*)" --accept-regex "(.*)Organisation\/OTB\/GISt(.*)|(.*)pub\/System\/DocumentGraphics(.*)"  -e robots=off -r --mirror --convert-links --backup-converted https://wiki.tudelft.nl/bin/view/Organisation/OTB/GISt/WebHome

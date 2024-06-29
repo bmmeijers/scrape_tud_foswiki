@@ -1,0 +1,1 @@
+wget --directory-prefix=/scratch --no-clobber --reject-regex "(.*)\?(.*)|(.*)rdiff(.*)" --accept-regex "(.*)Research\/ISO19152(.*)" -e robots=off -r --mirror --convert-links --backup-converted https://wiki.tudelft.nl/bin/view/Research/ISO19152/WebHome
