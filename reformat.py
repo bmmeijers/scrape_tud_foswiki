@@ -6,10 +6,10 @@ from datetime import datetime
 import hashlib
 import copy
 
+
 def read(blob):
     soup = BeautifulSoup(blob, "html5lib")
     return soup
-
 
 
 # input  (from wget)
@@ -47,7 +47,6 @@ stems = [filename.replace(web_start_dir, "") for filename in filenames]
 #   {list_items}
 # </ul>
 # """
-
 
 
 header_tpl = """<!DOCTYPE html>
@@ -105,7 +104,6 @@ header_tpl = """<!DOCTYPE html>
 """
 
 
-
 ### traverse bread crumbs to create hieararchical menu
 page_paths = []
 for filename, stem in zip(filenames, stems):
@@ -113,12 +111,16 @@ for filename, stem in zip(filenames, stems):
     with codecs.open(filename, encoding="iso-8859-1") as fh:
         content = fh.read()
     soup = read(content)
-    place_in_tree_structure = copy.copy(soup.find("div", {'class': 'tudelftTop'}))
+    place_in_tree_structure = copy.copy(soup.find("div", {"class": "tudelftTop"}))
     if place_in_tree_structure:
-        separators = place_in_tree_structure.find_all('span', {"class": "foswikiSeparator"})
-        links = place_in_tree_structure.find_all('a')
+        separators = place_in_tree_structure.find_all(
+            "span", {"class": "foswikiSeparator"}
+        )
+        links = place_in_tree_structure.find_all("a")
         if links:
-            page_path = [(link.get('href'), link.string) for link in links[:len(separators)+1]]
+            page_path = [
+                (link.get("href"), link.string) for link in links[: len(separators) + 1]
+            ]
             page_paths.append(page_path)
 
 tree = {}
@@ -127,23 +129,27 @@ for page_path in sorted(page_paths):
     root = page_path[0]
     for parent, child in zip(page_path, page_path[1:]):
         if parent not in tree:
-            tree[parent] = {'childs': set([])}
-        tree[parent]['childs'].add(child)
-    
+            tree[parent] = {"childs": set([])}
+        tree[parent]["childs"].add(child)
+
+
 def traverse(node, depth, buf):
     if node[1].lower().startswith("web"):
         return
-    print(" "*depth, "<ul>", file=buf)
-    if node[0].startswith('https'):
-        print(" "*depth, "<li>WikiWeb", file=buf)
+    print(" " * depth, "<ul>", file=buf)
+    if node[0].startswith("https"):
+        print(" " * depth, "<li>WikiWeb", file=buf)
     else:
-        print(" "*(depth+1), f"<li><a href='{node[0]}'>", node[1], "</a>", file=buf)
+        print(" " * (depth + 1), f"<li><a href='{node[0]}'>", node[1], "</a>", file=buf)
     if node in tree:
-        for kid in sorted(tree[node]['childs']):
+        for kid in sorted(tree[node]["childs"]):
             traverse(kid, depth + 1, buf)
-    print(" "*(depth+1), "</li>", file=buf)
-    print(" "*depth, "</ul>", file=buf)
+    print(" " * (depth + 1), "</li>", file=buf)
+    print(" " * depth, "</ul>", file=buf)
+
+
 from io import StringIO
+
 buf = StringIO()
 traverse(root, 0, buf)
 menu_hierarchy = buf.getvalue()
@@ -187,9 +193,10 @@ footer = f"""</div>
 
 for filename, stem in zip(filenames, stems):
 
-    with codecs.open(filename, 
-    encoding="iso-8859-15"
-    # encoding="windows-1252"
+    with codecs.open(
+        filename,
+        encoding="iso-8859-15",
+        # encoding="windows-1252"
     ) as fh:
         content = fh.read()
         content = content.replace("<p></p>", "</p><p>")
@@ -200,7 +207,6 @@ for filename, stem in zip(filenames, stems):
             if x.name == "p" and len(x.get_text(strip=True)) == 0:
                 # Remove empty p tags from the dom
                 x.extract()
-
 
         # will be placed inside html title, by header template
         title = container = soup.find("title")
@@ -220,15 +226,13 @@ for filename, stem in zip(filenames, stems):
                 # tag["class"] = tag.get("class", []) + ["w3-tiny"]
                 tag.extract()
 
-
             to_remove = container.find_all("div", {"class": "tudelftTopicAction"})
             for tag in to_remove:
                 tag.extract()
-                
+
             to_remove = container.find_all("span", {"class": "tudelftToolBar"})
             for tag in to_remove:
                 tag.extract()
-                
 
             # add w3-small class to specific div's (so that their font beccomes smaller)
             for relevant in [
